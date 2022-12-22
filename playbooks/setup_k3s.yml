@@ -16,6 +16,25 @@
         name: docker
         state: restarted
 
+- name: Prepare Jetson Docker hosts
+  hosts: k3s-jetson
+  become: yes
+  tasks:
+    - name: Ensure pip is installed
+      ansible.builtin.apt:
+        name: python3-pip
+        state: present
+
+    - name: Ensure JTOP is installed on Jetson hosts
+      ansible.builtin.pip:
+        name: jetson-stats
+      notify:
+        - Reboot Host
+
+  handlers:
+    - name: Reboot Host
+      ansible.builtin.reboot:
+
 - name: Prepare k3s server nodes
   hosts: k3s-server
   become: yes
