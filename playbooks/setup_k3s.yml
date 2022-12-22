@@ -1,0 +1,81 @@
+---
+- name: Prepare Docker on NVIDIA runtimes
+  hosts: k3s-cuda
+  become: yes
+  tasks:
+    - name: Ensure NVIDIA docker runtime is configured correctly
+      template:
+        src: "docker-daemon.json.j2"
+        dest: "/etc/docker/daemon.json"
+      notify:
+        - Restart Docker
+
+  handlers:
+    - name: Restart Docker
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+
+- name: Prepare k3s server nodes
+  hosts: k3s-server
+  become: yes
+  tasks:
+    - name: Ensure rancher directory exists
+      file:
+        path: "/etc/rancher/k3s"
+        recurse: true
+        state: directory
+
+    - name: Ensure k3s server configs are correct
+      template:
+        src: "config.server.yaml.j2"
+        dest: "/etc/rancher/k3s/config.yaml"
+
+    - name: Download k3s install script
+      get_url:
+        url: "https://get.k3s.io"
+        dest:  "/etc/rancher/install_k3s.sh"
+        mode: 0755
+      notify:
+        - Run k3s install script
+        - Ensure k3s is started
+
+  handlers:
+    - name: Run k3s install script
+      shell: "/etc/rancher/install_k3s.sh"
+    - name: Ensure k3s is started
+      systemd:
+        name: k3s
+        state: started
+
+- name: Prepare k3s agent nodes
+  hosts: k3s-agent
+  become: yes
+  tasks:
+    - name: Ensure rancher directory exists
+      file:
+        path: "/etc/rancher/k3s"
+        recurse: true
+        state: directory
+
+    - name: Ensure k3s agent configs are correct
+      template:
+        src: "config.agent.yaml.j2"
+        dest: "/etc/rancher/k3s/config.yaml"
+
+    - name: Download k3s install script
+      get_url:
+        url: "https://get.k3s.io"
+        dest:  "/etc/rancher/install_k3s.sh"
+        mode: 0755
+      notify:
+        - Run k3s install script
+        - Ensure k3s is started
+
+  handlers:
+    - name: Run k3s install script
+      shell: "/etc/rancher/install_k3s.sh"
+    - name: Ensure k3s is started
+      systemd:
+        name: k3s
+        state: started

@@ -1,0 +1,19 @@
+---
+- name: Destroy k3s cluster
+  hosts: k3s
+  become: yes
+  tasks:
+    - name: Check systemd services
+      service_facts:
+
+    - name: Run k3s uninstall script
+      shell: "k3s-uninstall.sh"
+      when: ansible_facts.services["k3s.service"] is defined
+
+    - name: Ensure rancher directories are removed
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "/etc/rancher"
+        - "/var/lib/rancher"
