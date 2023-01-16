@@ -1,0 +1,45 @@
+---
+Parameters:
+  ImageId:
+    Description: "Id of the AMI for cloud node. Default is Deep Learning AMI GPU PyTorch 1.12.1"
+    Type: "String"
+    Default: "ami-0fc00a7b1bd2e72f2"
+
+  InstanceType:
+    Description: "EC2 instance type."
+    Type: "String"
+    Default: "g4dn.xlarge"
+
+  KeyName:
+    Description: "Name of SSH keypair authorized for EC2 instance."
+    Type: "String"
+    Default: "antero-hy"
+
+Resources:
+  SparseCloudNode:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SecurityGroups:
+        - !Ref SparseCloudNodeSecurityGroup
+
+  SparseCloudNodeIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref SparseCloudNode
+
+  SparseCloudNodeSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Sparse cloud node security group"
+      SecurityGroupIngress:
+      - CidrIp: '0.0.0.0/0'
+        FromPort: 22
+        ToPort: 22
+        IpProtocol: 'tcp'
+      - CidrIp: '0.0.0.0/0'
+        FromPort: 50007
+        ToPort: 50008
+        IpProtocol: 'tcp'

@@ -1,6 +1,6 @@
 ---
 - name: Setup Sparse nodes
-  hosts: k3s
+  hosts: sparse
   become: yes
   tasks:
     - name: Clone sparse repository
