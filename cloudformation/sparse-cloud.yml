@@ -43,3 +43,16 @@ Resources:
         FromPort: 50007
         ToPort: 50008
         IpProtocol: 'tcp'
+
+  SwapVolume:
+    Type: AWS::EC2::Volume
+    Properties:
+      Size: 100
+      AvailabilityZone: !GetAtt SparseCloudNode.AvailabilityZone
+
+  SwapVolumeAttachment:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref SparseCloudNode
+      VolumeId: !Ref SwapVolume
+      Device: /dev/sdh
