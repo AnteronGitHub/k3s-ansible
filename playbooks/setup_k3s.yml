@@ -8,12 +8,6 @@
         name: python3-pip
         state: present
 
-    - name: Ensure JTOP is installed on Jetson hosts
-      ansible.builtin.pip:
-        name: jetson-stats
-      notify:
-        - Reboot Host
-
   handlers:
     - name: Reboot Host
       ansible.builtin.reboot:
@@ -36,7 +30,7 @@
     - name: Download k3s install script
       get_url:
         url: "https://get.k3s.io"
-        dest:  "/etc/rancher/install_k3s.sh"
+        dest: "/etc/rancher/install_k3s.sh"
         mode: 0755
       notify:
         - Run k3s install script
