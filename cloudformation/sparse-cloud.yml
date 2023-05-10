@@ -43,3 +43,7 @@ Resources:
         FromPort: 50007
         ToPort: 50008
         IpProtocol: 'tcp'
+      - CidrIp: '0.0.0.0/0'
+        FromPort: -1
+        ToPort: -1
+        IpProtocol: 'icmp'
