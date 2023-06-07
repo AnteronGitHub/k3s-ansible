@@ -1,0 +1,9 @@
+---
+- name: Setup Sparse cloud nodes
+  hosts: sparse_cloud
+  become: yes
+  tasks:
+    - name: Start Sparse monitor
+      shell:
+        cmd: make run-sparse-monitor
+        chdir: /opt/sparse

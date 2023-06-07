@@ -1,0 +1,18 @@
+---
+- name: Setup Sparse nodes
+  hosts: sparse
+  become: yes
+  tasks:
+    - name: Clone sparse repository
+      git:
+        repo: 'https://github.com/AnteronGitHub/sparse'
+        dest: /opt/sparse
+        version: rc3
+      notify:
+        - Build Sparse Docker images
+
+  handlers:
+    - name: Build Sparse Docker images
+      shell:
+        cmd: make docker
+        chdir: /opt/sparse

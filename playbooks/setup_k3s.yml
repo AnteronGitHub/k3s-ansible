@@ -1,20 +1,16 @@
 ---
-- name: Prepare Docker on NVIDIA runtimes
-  hosts: k3s-cuda
+- name: Prepare Jetson Docker hosts
+  hosts: k3s-jetson
   become: yes
   tasks:
-    - name: Ensure NVIDIA docker runtime is configured correctly
-      template:
-        src: "docker-daemon.json.j2"
-        dest: "/etc/docker/daemon.json"
-      notify:
-        - Restart Docker
+    - name: Ensure pip is installed
+      ansible.builtin.apt:
+        name: python3-pip
+        state: present
 
   handlers:
-    - name: Restart Docker
-      ansible.builtin.service:
-        name: docker
-        state: restarted
+    - name: Reboot Host
+      ansible.builtin.reboot:
 
 - name: Prepare k3s server nodes
   hosts: k3s-server
@@ -34,7 +30,7 @@
     - name: Download k3s install script
       get_url:
         url: "https://get.k3s.io"
-        dest:  "/etc/rancher/install_k3s.sh"
+        dest: "/etc/rancher/install_k3s.sh"
         mode: 0755
       notify:
         - Run k3s install script
