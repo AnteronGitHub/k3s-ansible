@@ -33,12 +33,13 @@
         dest: "/etc/rancher/install_k3s.sh"
         mode: 0755
       notify:
-        - Run k3s install script
+        - Run k3s install script for server
         - Ensure k3s is started
 
   handlers:
-    - name: Run k3s install script
+    - name: Run k3s install script for server
       shell: "/etc/rancher/install_k3s.sh"
+
     - name: Ensure k3s is started
       systemd:
         name: k3s
@@ -62,16 +63,17 @@
     - name: Download k3s install script
       get_url:
         url: "https://get.k3s.io"
-        dest:  "/etc/rancher/install_k3s.sh"
+        dest: "/etc/rancher/install_k3s.sh"
         mode: 0755
       notify:
-        - Run k3s install script
-        - Ensure k3s is started
+        - Run k3s install script for agent
+        - Ensure k3s-agent is started
 
   handlers:
-    - name: Run k3s install script
-      shell: "/etc/rancher/install_k3s.sh"
-    - name: Ensure k3s is started
+    - name: Run k3s install script for agent
+      shell: "K3S_URL={{ k3s_url }} K3S_TOKEN={{ cluster_token }} /etc/rancher/install_k3s.sh"
+
+    - name: Ensure k3s-agent is started
       systemd:
-        name: k3s
+        name: k3s-agent
         state: started

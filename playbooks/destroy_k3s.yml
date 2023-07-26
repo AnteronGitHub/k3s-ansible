@@ -10,6 +10,10 @@
       shell: "k3s-uninstall.sh"
       when: ansible_facts.services["k3s.service"] is defined
 
+    - name: Run k3s agent uninstall script
+      shell: "k3s-agent-uninstall.sh"
+      when: ansible_facts.services["k3s-agent.service"] is defined
+
     - name: Ensure rancher directories are removed
       file:
         path: "{{ item }}"
